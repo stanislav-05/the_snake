@@ -1,9 +1,13 @@
-# Из модуля random импортируем функции choice и randint
-from random import choice, randint
-# Из модуля typing импортируем функцию Optional
-from typing import Optional
-
 import pygame as pg
+
+from random import choice, randint
+"""Из модуля random импортируем функции choice и randint.
+
+Функцию choice будем применять для рандомного выбора направления движения змеи.
+Функцию randint применим для случайного появления яблока на игровом поле.
+"""
+from typing import Optional
+"""Из модуля typing импортируем функцию Optional для аннотации типов."""
 
 # Константы для размеров поля и сетки:
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
@@ -72,6 +76,7 @@ class Apple(GameObject):
 
     def __init__(self, occupied_cells=None) -> None:
         super().__init__()
+        """Инициализируем дочерний класс Apple."""
         self.body_color = APPLE_COLOR
         self.randomize_position(occupied_cells)
 
@@ -86,7 +91,7 @@ class Apple(GameObject):
 
     def draw(self, surface, position, color, bg_color):
         """Метод draw для дочернего класса Apple."""
-        super().draw_cell(surface, position, color, bg_color)
+        self.draw_cell(surface, position, color, bg_color)
 
 
 class Snake(GameObject):
@@ -102,6 +107,7 @@ class Snake(GameObject):
         Определяем необходимые атрибуты объекта.
         """
         super().__init__()
+        """Инициализировали дочерний класс Snake."""
         self.body_color = SNAKE_COLOR
         self.length = 1
         self.positions: list = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
@@ -121,11 +127,11 @@ class Snake(GameObject):
         Также отрисовывает голову и затирает последний элемент змейки.
         """
         for position in self.positions[:-1]:
-            super().draw_cell(surface, position, color, bg_color)
-        super().draw_cell(surface, self.get_head_position(), color, bg_color)
+            self.draw_cell(surface, position, color, bg_color)
+        self.draw_cell(surface, self.get_head_position(), color, bg_color)
         if self.last:
-            super().draw_cell(surface, self.last, BOARD_BACKGROUND_COLOR,
-                              BOARD_BACKGROUND_COLOR)
+            self.draw_cell(surface, self.last, BOARD_BACKGROUND_COLOR,
+                           BOARD_BACKGROUND_COLOR)
 
     def get_head_position(self):
         """Этот метод возвращает голову змейки(первый элемент списка)."""
@@ -146,24 +152,9 @@ class Snake(GameObject):
         Последний элемент удаляется.
         """
         head_x, head_y = self.get_head_position()
-        direction_x, direction_y = self.direction
-        new_position_head = (head_x + direction_x * GRID_SIZE,
-                             head_y + direction_y * GRID_SIZE)
-        new_pos_x, new_pos_y = new_position_head
-        if new_pos_x > SCREEN_WIDTH:
-            new_position_head = (new_pos_x - SCREEN_WIDTH
-                                 - GRID_SIZE, new_pos_y)
-        elif new_pos_x < 0:
-            new_position_head = (new_pos_x + SCREEN_WIDTH,
-                                 new_pos_y)
-        elif new_pos_y < 0:
-            new_position_head = (new_pos_x,
-                                 new_pos_y + SCREEN_HEIGHT
-                                 + GRID_SIZE)
-        elif (new_pos_y > SCREEN_HEIGHT and new_pos_y
-              % SCREEN_HEIGHT != 0):
-            new_position_head = (new_pos_x, new_pos_y %
-                                 SCREEN_HEIGHT)
+        dir_x, dir_y = self.direction
+        new_position_head = ((head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH,
+                             (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT)
         self.positions.insert(0, new_position_head)
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
@@ -176,7 +167,7 @@ def handle_keys(game_object):
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
-            raise SystemExit
+            raise SystemExit('Окно игры было закрыто.')
         elif event.type == pg.KEYDOWN:
             if event.key == pg.K_UP and game_object.direction != DOWN:
                 game_object.next_direction = UP
