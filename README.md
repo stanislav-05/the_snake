@@ -40,3 +40,9 @@ pip install -r requirements.txt
 ```
 python the_snake.py
 ```
+
+## Автор:
+
+- Имя: Станислав
+- GitHub: [stanislav-05](https://github.com/stanislav-05)
+- Email: [stasm9876@gmail.com](mailto:stasm9876@gmail.com)
